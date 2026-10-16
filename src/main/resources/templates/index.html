@@ -1,0 +1,54 @@
+<style>
+body {
+    background: linear-gradient(135deg,rgba(47, 54, 92, 1) 0%, rgba(25, 133, 129, 1) 50%, rgba(97, 58, 135, 1) 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#menu {
+    width: 200px;
+    height: fit-content;
+    border-radius: 40px;
+    background-color: hsl(220, 6%, 75%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+#menu h1 {
+    margin: 0px;
+}
+.game {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 200px;
+    border-radius: 10px;
+    background-color: hsl(220, 7%, 65%);
+    height: fit-content;
+}
+.game:hover {
+    cursor: pointer;
+    background-color: hsl(220, 7%, 61%);
+}
+.game:active {
+    background-color: hsl(220, 7%, 57%);
+}
+</style>
+<div id="menu">
+    <h1>Games</h1>
+    <div class="game" th:each="game : ${games}" th:data-link="${game.url}">
+        <img th:src="${game.icon}">
+        <p th:text="${game.name}"></p>
+    </div>
+</div>
+<script>
+document.querySelectorAll(".game").forEach(element => {
+    element.addEventListener("click", () => redirect(element.getAttribute("data-link")));
+});
+function redirect(page) {
+    window.location.href = window.location.protocol + "//" + window.location.host + page;
+}
+</script>
