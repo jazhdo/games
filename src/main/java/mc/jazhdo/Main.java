@@ -46,21 +46,32 @@ public class Main {
             });
             routes.get("/", ctx -> {
                 // Menu page
-
-                // TODO: Load icons via bytes and into data URIs here
                 Context context = new Context();
-                context.setVariables(Map.of("games", List.of(new Game("data:png;base64,[data_here]", "Minesweeper", "/minesweeper"), new Game("data:png;base64,[data_here]", "Sudoku", "/sudoku"))));
-                ctx.render("templates/outer.html", Map.of("name", "Home", "content", engine.process(new String(getFile("/index.html"), StandardCharsets.UTF_8), context)));
+                context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("data:png;base64,[data_here]", "Sudoku", "/sudoku"))));
+                ctx.render("templates/outer.html", Map.of("name", "Home", "content", engine.process(new String(getTemplatePage("/index.html"), StandardCharsets.UTF_8), context)));
             });
             routes.get("/{page}", ctx -> {
-                switch (ctx.pathParam("page")) {
+                String page = ctx.pathParam("page");
+                switch (page) {
                     case "minesweeper" -> {
-                        Context outerContext = new Context(), innerContext = new Context();
-                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("/minesweeper.html"), StandardCharsets.UTF_8), innerContext)));
-                        ctx.render("templates/outer.html", Map.of("name", "Minesweeper", "content", engine.process(new String(getFile("/main.html"), StandardCharsets.UTF_8), outerContext)));
+                        Context outerContext = new Context();
+                        outerContext.setVariables(Map.of("content", engine.process(new String(getTemplatePage("/minesweeper.html"), StandardCharsets.UTF_8), new Context())));
+                        ctx.render("templates/outer.html", Map.of("name", "Minesweeper", "content", engine.process(new String(getTemplatePage("/main.html"), StandardCharsets.UTF_8), outerContext)));
+                    }
+                    case "minesweeper.js" -> {
+                        ctx.contentType("text/javascript");
+                        ctx.result(new String(getTemplatePage("/minesweeper.js"), StandardCharsets.UTF_8));
                     }
                     case "sudoku" -> {
 
+                    }
+                    case "boom", "bomb", "flag", "wrong" -> {
+                        ctx.contentType("image/png");
+                        ctx.result(getFile("icons/" + page + ".png"));
+                    }
+                    case "favicon.ico" -> {
+                        ctx.contentType("image/x-icon");
+                        ctx.result(getFile("icons/favicon.ico"));
                     }
                     default -> {
                         // 404 Error page
@@ -87,9 +98,12 @@ public class Main {
         }
     }
 
+    private byte[] getTemplatePage(String path) {
+        return getFile("templates" + path);
+    }
     private byte[] getFile(String path) {
         // Root folder is resources/ (Note: Deploying on windows causes bug where leading slash is remove (that is required))
-        try (InputStream fileStream = ClassLoader.getSystemResourceAsStream("templates" + Paths.get(path).normalize().toString())) {
+        try (InputStream fileStream = ClassLoader.getSystemResourceAsStream(Paths.get(path).normalize().toString())) {
             return fileStream.readAllBytes();
         } catch (IOException e) {
             return new byte[]{};

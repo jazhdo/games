@@ -1,22 +1,130 @@
+<style>
+#main h1 {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+#board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    background-color: hsl(50, 52%, 93%);
+    border-radius: 20px;
+    gap: 2px;
+}
+
+/* Gamemode selection menu */
+#board div#gamemode-select {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+#board div#gamemode-select button {
+    padding: 18px;
+    background-color: hsl(0, 0%, 88%);
+    border-radius: 100px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    border: hsl(0, 0%, 60%) solid 1px;
+    font-size: 23px;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+#board div#gamemode-select button:hover {
+    background-color: hsl(0, 0%, 78%);
+    cursor: pointer;
+}
+
+/* Playing pieces */
+#board div {
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+}
+.piece {
+    border: none;
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    background-color: hsl(240, 10%, 92%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0px;
+}
+.piece:hover {
+    cursor: pointer;
+}
+.piece[data-mode=" "]::after {
+    content: "";
+    background-color: hsl(0, 0%, 70%);
+    margin: 1px;
+    border-radius: 9px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+}
+.piece[data-mode="x"] {
+    background-image: url("/flag");
+}
+.piece.clicked {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 36px;
+    font-weight: 450;
+    background-image: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.piece.clicked::after, .piece.wrong::after, .piece.bomb::after, .piece.boom::after {
+    content: none;
+}
+.piece.clicked[data-type="1"] {
+    color: #00f;
+}
+.piece.clicked[data-type="2"] {
+    color: #080;
+}
+.piece.clicked[data-type="3"] {
+    color: #f00;
+}
+.piece.clicked[data-type="4"] {
+    color: #008;
+}
+.piece.clicked[data-type="5"] {
+    color: #800;
+}
+.piece.clicked[data-type="6"] {
+    color: #088;
+}
+.piece.clicked[data-type="7"] {
+    color: #000;
+}
+.piece.clicked[data-type="8"] {
+    color: #888;
+}
+.piece.wrong {
+    background-image: url("/wrong");
+}
+.piece.bomb {
+    background-image: url("/bomb");
+}
+.piece.boom {
+    background-image: url("/boom");
+}
+</style>
 <h1>Minesweeper</h1>
 <div id="board">
+    <div id="gamemode-select">
+        <button onclick="start(0)">Beginner (8x8, 10 Mines)</button>
+        <button onclick="start(1)">Intermediate (16x16, 40 Mines)</button>
+        <button onclick="start(2)">Expert (30x16, 99 Mines)</button>
+    </div>
 </div>
-<script>
-const board = document.getElementById("board");
-function resetBoard() {
-    board.innerHTML = "";
-}
-function loadBoard(x, y, totalMines) {
-    resetBoard();
-
-    const mines = [];
-    // TODO: Make mine locater logic and add pieces
-
-    for (i = 0; i < y; i++) {
-        for (j = 0; j < x; j++) {
-            const piece = document.getElementById("")
-        }
-    }
-
-}
-</script>
+<script src="./minesweeper.js"></script>

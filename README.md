@@ -14,4 +14,12 @@ A common logic game.
 
 ## Note to reviewer
 
-These are my first attempts at making games on html (or making full games in general (I've had a tiny bit of experience with pygame)) (I have never ever done this before so please don't be too harsh (ik my previous project was more complex but that's because I've made minecraft paper plugins))
+This is my first attempt at making games!
+
+## Compatability
+
+Tested on Blink (Chromium), WebKit (Safari), and Gecko (Mozilla Firefox).
+
+Made for Firefox.
+
+Minimum screen size: 1320 x 950

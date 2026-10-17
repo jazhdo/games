@@ -1,19 +1,60 @@
 <style>
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    background-color: hsl(185, 71%, 32%);
+    padding: 18px 20px;
+}
+header a {
+    margin: 0px;
+    font-size: 34px;
+    font-weight: 400;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: white;
+    text-decoration: none;
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+nav {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+}
 #main {
     margin: 20px;
     display: flex;
     flex: 1;
     flex-direction: column;
 }
+footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: hsl(213, 71%, 38%);
+    padding: 14px;
+}
+footer p {
+    margin: 0px;
+    font-size: 24px;
+    font-weight: 400;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: white;
+}
 </style>
 <header>
-    <h1>Games</h1>
+    <a href="/">Games</a>
     <nav>
-
+        <a href="/minesweeper">Minesweeper</a>
+        <a href="/sudoku">Sudoku</a>
     </nav>
 </header>
-<div id="main"></div>
+<div id="main" th:utext="${content}"></div>
 <footer>
     <p>Games - Jazhdo</p>
-    <p>Hack Club Terra 2026-2027</p>
+    <p>For Hack Club Terra 2026-2027</p>
 </footer>
