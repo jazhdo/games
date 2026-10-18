@@ -1,28 +1,38 @@
-const /** @type {HTMLDivElement} */ board = document.getElementById("board"), controller = new AbortController();
+const /** @type {HTMLDivElement} */ board = document.getElementById("board"),
+/** @type {HTMLDivElement} */ info = document.getElementById("info"), /** @type {HTMLHeadingElement} */ minesLeftElement = info.children[0],
+/** @type {HTMLImageElement} */ smilyElement = info.children[1], /** @type {HTMLHeadingElement} */ timeSpentElement = info.children[2];
 board.addEventListener("contextmenu", event => event.preventDefault());
 
-let firstClick = true, opened = 0, totalMines = 0, totalSquares = 0;;
+let firstClick = true, opened = 0, totalMines = 0, totalSquares = 0, size = null, timeSpent = 0, stopwatch = null, minesLeft = 0, playing = false, controller = new AbortController();
 function resetBoard() {
     board.innerHTML = "";
     firstClick = true;
     opened = 0;
     totalMines = 0;
     totalSquares = 0;
+    timeSpent = 0;
+    minesLeft = 0;
+    playing = true;
+    if (stopwatch !== null) clearInterval(stopwatch);
 }
-function loadBoard({x, y, mines}) {
+function loadBoard() {
     resetBoard();
 
-    totalMines = mines;
-    totalSquares = x * y;
+    minesLeft = totalMines = size.mines;
+    totalSquares = size.x * size.y;
+
+    minesLeftElement.innerText = "Mines Left: " + Math.max(0, totalMines).toString().padStart(2, "0");
+    timeSpentElement.innerText = "Time Spent: 00:00";
+    smilyElement.src = "/normal";
 
     // Make piece elements
     const /** @type {[[HTMLButtonElement]]} */ pieces = [];
-    for (i = 0; i < y; i++) {
+    for (i = 0; i < size.y; i++) {
         const row = document.createElement("div"), list = [];
-        for (j = 0; j < x; j++) {
+        for (j = 0; j < size.x; j++) {
             const piece = document.createElement("button"), pieceX = j, pieceY = i;
             piece.className = "piece";
-            piece.addEventListener("click", () => handlePieceClick({x: x, y: y}, {x: pieceX, y: pieceY}, pieces, piece, mines), { signal: controller.signal, once: true }); 
+            piece.addEventListener("click", () => handlePieceClick({x: size.x, y: size.y}, {x: pieceX, y: pieceY}, pieces, piece, size.mines), { signal: controller.signal, once: true }); 
             piece.setAttribute("data-mode", " ");
             piece.addEventListener("contextmenu", event => {
                 event.preventDefault();
@@ -33,11 +43,15 @@ function loadBoard({x, y, mines}) {
                         case " ":
                             piece.setAttribute("data-mode", "x");
                             opened++;
+                            minesLeft--;
+                            minesLeftElement.innerText = "Mines Left: " + Math.max(0, minesLeft).toString().padStart(2, "0");
                             checkEndGame();
                             break;
                         case "x":
                             piece.setAttribute("data-mode", " ");
                             opened--;
+                            minesLeft++;
+                            minesLeftElement.innerText = "Mines Left: " + Math.max(0, minesLeft).toString().padStart(2, "0");
                             break;
                     };
                 }
@@ -50,6 +64,13 @@ function loadBoard({x, y, mines}) {
         pieces.push(list);
         board.append(row);
     }
+
+    stopwatch = setInterval(() => {
+        if (playing) {
+            timeSpent++;
+            timeSpentElement.innerText = "Time Spent: " + Math.floor(timeSpent / 60).toString().padStart(2, "0") + ":" + (timeSpent % 60).toString().padStart(2, "0");
+        } else clearInterval(stopwatch);
+    }, 1000);
 }
 
 /**
@@ -93,8 +114,7 @@ function pieceOutOfBounds(total, coordinate) {
  * @param {HTMLButtonElement} piece
  */
 function handlePieceClick(total, pos, pieces, piece) {
-    if (piece.getAttribute("data-mode") == " ") {
-        opened++;
+    if (piece.getAttribute("data-mode") === " ") {
         switch (piece.getAttribute("data-type")) {
             case "mine":
                 endGame(false, pieces);
@@ -111,7 +131,7 @@ function handlePieceClick(total, pos, pieces, piece) {
                     let minesAdded = 0;
                     while (minesAdded < totalMines) {
                         const /** @type {coordinate} */ spot = {x: rangedRandomNum(0, total.x), y: rangedRandomNum(0, total.y)}, /** @type {HTMLButtonElement} */ selectedElement = pieces[spot.y][spot.x];
-                        if (!forbiddenSpots.some(item => JSON.stringify(item) === JSON.stringify(spot)) && selectedElement.getAttribute("data-type") == null) {
+                        if (!forbiddenSpots.some(item => JSON.stringify(item) === JSON.stringify(spot)) && selectedElement.getAttribute("data-type") === null) {
                             selectedElement.setAttribute("data-type", "mine");
                             minesAdded++;
                         }
@@ -119,6 +139,8 @@ function handlePieceClick(total, pos, pieces, piece) {
 
                     handlePieceClick(total, pos,pieces, piece);
                 } else {
+                    opened++;
+
                     let nearbyMines = 0;
                     neighboringPieces(pos).forEach(coordinate => {
                         if (pieceOutOfBounds(total, coordinate)) return;
@@ -169,7 +191,7 @@ function recursiveOpen(total, pos, pieces) {
     neighboringPieces(pos).forEach(coordinate => {
         if (pieceOutOfBounds(total, coordinate)) return;
         const piece = pieces[coordinate.y][coordinate.x];
-        if (piece.getAttribute("data-type") == null) handlePieceClick(total, coordinate, pieces, piece);
+        if (piece.getAttribute("data-type") === null) handlePieceClick(total, coordinate, pieces, piece);
     });
 }
 
@@ -194,11 +216,12 @@ function rangedRandomNum(start,  end) {
 /**
  * Starts a game
  * 
- * @param {number} mode 
+ * @param {gamemode} gamemode
  */
-function start(mode) {
-    const /** @type {gamemode} */ size = [{x: 8, y: 8, mines: 10}, {x: 16, y: 16, mines: 40}, {x: 30, y: 16, mines: 99}][mode];
-    loadBoard(size);
+function start(gamemode) {
+    size = gamemode;
+    info.style.display = "flex";
+    loadBoard();
 }
 
 /**
@@ -225,7 +248,41 @@ function endGame(win, pieces) {
                 else if (dataType === null && dataMode === "x") piece.classList.add("wrong");
             });
         });
-    }
+        smilyElement.src = "/lose";
+    } else smilyElement.src = "/win";
     controller.abort();
-    console.log("Game ended! Win: " + win.toString());
+    controller = new AbortController();
+    playing = false;
+}
+
+function reset() {
+    loadBoard();
+}
+
+function helpPopup() {
+    const background = document.createElement("div"), popup = document.createElement("div"), text = `
+    <h2>Help Menu (Click outside this box to exit)</h2>
+    <h3>Starting</h3>
+    <p>You can start by choosing a game mode in the menu seen before this help popup. To change that game mode, click the "Minesweeper" button on the top right corner of the screen.</p>
+    <h3>Goal</h3>
+    <p>Your goal is to flag out all the mines and open all the squares without them.</p>
+    <h3>Rules</h3>
+    <p>Every open square will contain the number of squares with mines in a 3x3 box centered at that open square.<p>
+    <h3>Controls</h3>
+    <ul>
+    <li>Right click: Toggle mine flag</li>
+    <li>Left click: Open a square</li>
+    <li>Double left click: If there are the same number of flags in a square's 3x3 box as the number on the square, double clicking the square will open all the unopened squares around it.</li>
+    </ul>
+    <h3>Resetting the game</h3>
+    <p>You can reset the game by clicking the emoji face on the information bar above the game.</p>
+    <h3>More info for the reviewer(s) of this game</h3>
+    <p>Go read the README at <a href="https://github.com/jazhdo/games/blob/main/README.md">https://github.com/jazhdo/games/blob/main/README.md</a>.</p>`;
+    background.id = "background";
+    popup.id = "popup";
+    popup.innerHTML = text;
+    background.append(popup);
+    document.getElementById("game").after(background);
+    popup.addEventListener("click", event => event.stopPropagation());
+    background.addEventListener("click", background.remove);
 }

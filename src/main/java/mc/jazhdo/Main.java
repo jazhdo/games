@@ -39,7 +39,7 @@ public class Main {
 
                 // Check hostname
                 String ip = ctx.ip();
-                if (!"[0:0:0:0:0:0:0:1]".equals(ip)) {
+                if (!"[0:0:0:0:0:0:0:1]".equals(ip) && !"127.0.0.1".equals(ip)) {
                     ctx.skipRemainingHandlers();
                     log.info("Request IP {} Forbidden.", ip);
                 }
@@ -63,9 +63,11 @@ public class Main {
                         ctx.result(new String(getTemplatePage("/minesweeper.js"), StandardCharsets.UTF_8));
                     }
                     case "sudoku" -> {
-
+                        Context outerContext = new Context();
+                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/sudoku.html"), StandardCharsets.UTF_8), new Context())));
+                        ctx.render("templates/outer.html", Map.of("name", "Sudoku", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
-                    case "boom", "bomb", "flag", "wrong" -> {
+                    case "win", "normal", "lose", "boom", "bomb", "flag", "wrong" -> {
                         ctx.contentType("image/png");
                         ctx.result(getFile("icons/" + page + ".png"));
                     }
@@ -74,7 +76,9 @@ public class Main {
                         ctx.result(getFile("icons/favicon.ico"));
                     }
                     default -> {
-                        // 404 Error page
+                        Context outerContext = new Context();
+                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/error.html"), StandardCharsets.UTF_8), new Context())));
+                        ctx.render("templates/outer.html", Map.of("name", "Error 404", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
                 };
             });

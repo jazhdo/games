@@ -1,17 +1,43 @@
 <style>
-#main h1 {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+#game {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-color: hsl(50, 52%, 93%);
+    border-radius: 20px;
+}
+#info {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    background-color: hsl(0, 0%, 88%);
+    padding: 5px;
+    border-radius: 20px;
+}
+#info h2 {
+    font-family: ui-monospace, monospace;
+    font-size: 30px;
+    font-weight: 400;
+    margin: 0px;
+}
+#info img {
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+#info img:hover {
+    cursor: pointer;
 }
 #board {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
-    background-color: hsl(50, 52%, 93%);
-    border-radius: 20px;
     gap: 2px;
+    height: 100%;
+    width: 100%;
 }
 
 /* Gamemode selection menu */
@@ -24,7 +50,6 @@
     padding: 18px;
     background-color: hsl(0, 0%, 88%);
     border-radius: 100px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     border: hsl(0, 0%, 60%) solid 1px;
     font-size: 23px;
     user-select: none;
@@ -74,7 +99,6 @@
     background-image: url("/flag");
 }
 .piece.clicked {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 36px;
     font-weight: 450;
     background-image: none;
@@ -118,13 +142,57 @@
 .piece.boom {
     background-image: url("/boom");
 }
+
+/* Popup (used for Help menu only right now) */
+#background {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: hsla(0, 0%, 0%, 20%);
+}
+#popup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 900px;
+    height: fit-content;
+    padding: 40px;
+    background-color: hsl(0, 0%, 88%);
+    border-radius: 30px;
+}
+/* #popup h2 {
+
+} */
+#popup h3 {
+    margin: 0px;
+    margin-top: 14px;
+}
+#popup p {
+    margin: 0px;
+}
+#popup ul {
+    margin: 0px;
+}
 </style>
 <h1>Minesweeper</h1>
-<div id="board">
-    <div id="gamemode-select">
-        <button onclick="start(0)">Beginner (8x8, 10 Mines)</button>
-        <button onclick="start(1)">Intermediate (16x16, 40 Mines)</button>
-        <button onclick="start(2)">Expert (30x16, 99 Mines)</button>
+<div id="game">
+    <div id="info" style="display: none;">
+        <h2>Mines Left: </h2>
+        <img onclick="reset();" src="/normal">
+        <h2>Time Spent: </h2>
+    </div>
+    <div id="board">
+        <div id="gamemode-select">
+            <button onclick="start({x: 8, y: 8, mines: 10});">Beginner (8x8, 10 Mines)</button>
+            <button onclick="start({x: 16, y: 16, mines: 40});">Intermediate (16x16, 40 Mines)</button>
+            <button onclick="start({x: 30, y: 16, mines: 99});">Expert (30x16, 99 Mines)</button>
+            <button onclick="helpPopup();">Help</button>
+        </div>
     </div>
 </div>
 <script src="./minesweeper.js"></script>
