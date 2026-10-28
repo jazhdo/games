@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.mariuszgromada.math.janetsudoku.SudokuGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
@@ -18,7 +21,8 @@ import io.javalin.config.RoutesConfig;
 import io.javalin.rendering.template.JavalinThymeleaf;
 
 public class Main {
-    private Logger log = LoggerFactory.getLogger(Main.class);
+    private final Logger log = LoggerFactory.getLogger(Main.class);
+    private final SudokuGenerator sudokuGenerator = new SudokuGenerator();
     private Javalin jl;
 
     public void main(String[] args) {
@@ -39,7 +43,7 @@ public class Main {
 
                 // Check hostname
                 String ip = ctx.ip();
-                if (!"[0:0:0:0:0:0:0:1]".equals(ip) && !"127.0.0.1".equals(ip)) {
+                if (!"[0:0:0:0:0:0:0:1]".equals(ip) && !"127.0.0.1".equals(ip) && !"100.74.100.100".equals(ip)) {
                     ctx.skipRemainingHandlers();
                     log.info("Request IP {} Forbidden.", ip);
                 }
@@ -48,21 +52,26 @@ public class Main {
                 // Menu page
                 Context context = new Context();
                 context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("data:png;base64,[data_here]", "Sudoku", "/sudoku"))));
-                ctx.render("templates/outer.html", Map.of("name", "Home", "content", engine.process(new String(getTemplatePage("/index.html"), StandardCharsets.UTF_8), context)));
+                ctx.render("templates/outer.html", Map.of("name", "Home", "content", engine.process(new String(getFile("templates/index.html"), StandardCharsets.UTF_8), context)));
             });
             routes.get("/{page}", ctx -> {
                 String page = ctx.pathParam("page");
                 switch (page) {
                     case "minesweeper" -> {
                         Context outerContext = new Context();
-                        outerContext.setVariables(Map.of("content", engine.process(new String(getTemplatePage("/minesweeper.html"), StandardCharsets.UTF_8), new Context())));
-                        ctx.render("templates/outer.html", Map.of("name", "Minesweeper", "content", engine.process(new String(getTemplatePage("/main.html"), StandardCharsets.UTF_8), outerContext)));
+                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/minesweeper.html"), StandardCharsets.UTF_8), new Context())));
+                        ctx.render("templates/outer.html", Map.of("name", "Minesweeper", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
                     case "minesweeper.js" -> {
                         ctx.contentType("text/javascript");
-                        ctx.result(new String(getTemplatePage("/minesweeper.js"), StandardCharsets.UTF_8));
+                        ctx.result(new String(getFile("templates/minesweeper.js"), StandardCharsets.UTF_8));
                     }
                     case "sudoku" -> {
+                        int[][] board;
+                        do {
+                            board = sudokuGenerator.generate();
+                        } while (board == null);
+                        log.info(printArrayOfArraysOfInt(board));
                         Context outerContext = new Context();
                         outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/sudoku.html"), StandardCharsets.UTF_8), new Context())));
                         ctx.render("templates/outer.html", Map.of("name", "Sudoku", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
@@ -80,31 +89,21 @@ public class Main {
                         outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/error.html"), StandardCharsets.UTF_8), new Context())));
                         ctx.render("templates/outer.html", Map.of("name", "Error 404", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
-                };
+                }
             });
         });
         jl.start("0.0.0.0", 3000);
     }
+    // Unneeded debug functions
     // private String printMap(Map<String, String> map) {
     //     String output = "\n";
     //     for (Entry<String, String> entry : map.entrySet()) output += entry.getKey() + ": " + entry.getValue() + "\n";
     //     return output;
     // }
-    public record Game(String icon, String name, String url) {
-        public String getIcon() {
-            return icon;
-        }
-        public String getName() {
-            return name;
-        }
-        public String getUrl() {
-            return url;
-        }
+    private String printArrayOfArraysOfInt(int[][] intArray) {
+        return Arrays.stream(intArray).map((row) -> "[" + Arrays.stream(row).mapToObj(String::valueOf).collect(Collectors.joining(", ")) + "]").collect(Collectors.joining((", ")));
     }
-
-    private byte[] getTemplatePage(String path) {
-        return getFile("templates" + path);
-    }
+    public record Game(String icon, String name, String url) {}
     private byte[] getFile(String path) {
         // Root folder is resources/ (Note: Deploying on windows causes bug where leading slash is remove (that is required))
         try (InputStream fileStream = ClassLoader.getSystemResourceAsStream(Paths.get(path).normalize().toString())) {

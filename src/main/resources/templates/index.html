@@ -52,9 +52,9 @@ body {
 </style>
 <div id="menu">
     <h1>Games</h1>
-    <div class="game" th:each="game : ${games}" th:data-link="${game.url}">
-        <img th:src="${game.icon}">
-        <p th:text="${game.name}"></p>
+    <div class="game" th:each="game : ${games}" th:data-link="${game.url()}">
+        <img th:src="${game.icon()}">
+        <p th:text="${game.name()}"></p>
     </div>
 </div>
 <script>
