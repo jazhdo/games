@@ -27,7 +27,5 @@ Minimum screen size: 1320 x 1020
 
 ## Terra Week 2 Theme: Antique
 
-- 4-bit colors
-  - 
-  - 
+- 4-bit colors: each hex part can only be 0x00, 0x55, 0xAA, or 0xFF (excluding shading)
 - Sudoku itself is pretty old, having came out in 1984

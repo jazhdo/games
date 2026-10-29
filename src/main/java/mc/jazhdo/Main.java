@@ -4,10 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.mariuszgromada.math.janetsudoku.SudokuGenerator;
 import org.slf4j.Logger;
@@ -22,7 +20,6 @@ import io.javalin.rendering.template.JavalinThymeleaf;
 
 public class Main {
     private final Logger log = LoggerFactory.getLogger(Main.class);
-    private final SudokuGenerator sudokuGenerator = new SudokuGenerator();
     private Javalin jl;
 
     public void main(String[] args) {
@@ -69,11 +66,13 @@ public class Main {
                     case "sudoku" -> {
                         int[][] board;
                         do {
-                            board = sudokuGenerator.generate();
+                            board = (new SudokuGenerator()).generate();
                         } while (board == null);
-                        log.info(printArrayOfArraysOfInt(board));
+                        Context innerContext = new Context();
+                        innerContext.setVariable("rows", board);
+
                         Context outerContext = new Context();
-                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/sudoku.html"), StandardCharsets.UTF_8), new Context())));
+                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/sudoku.html"), StandardCharsets.UTF_8), innerContext)));
                         ctx.render("templates/outer.html", Map.of("name", "Sudoku", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
                     case "win", "normal", "lose", "boom", "bomb", "flag", "wrong" -> {
@@ -100,16 +99,19 @@ public class Main {
     //     for (Entry<String, String> entry : map.entrySet()) output += entry.getKey() + ": " + entry.getValue() + "\n";
     //     return output;
     // }
-    private String printArrayOfArraysOfInt(int[][] intArray) {
-        return Arrays.stream(intArray).map((row) -> "[" + Arrays.stream(row).mapToObj(String::valueOf).collect(Collectors.joining(", ")) + "]").collect(Collectors.joining((", ")));
-    }
+    // private String printArrayOfArraysOfInt(int[][] intArray) {
+    //     return "[" + Arrays.stream(intArray).map((row) -> "[" + Arrays.stream(row).mapToObj(String::valueOf).collect(Collectors.joining(", ")) + "]").collect(Collectors.joining((", "))) + "]";
+    // }
     public record Game(String icon, String name, String url) {}
     private byte[] getFile(String path) {
         // Root folder is resources/ (Note: Deploying on windows causes bug where leading slash is remove (that is required))
         try (InputStream fileStream = ClassLoader.getSystemResourceAsStream(Paths.get(path).normalize().toString())) {
             return fileStream.readAllBytes();
-        } catch (IOException e) {
-            return new byte[]{};
+        } catch (IOException ex) {
+            return new byte[0];
+        } catch (NullPointerException ex) {
+            log.warn("Null pointer exception occurred while fetching system resource \"{}\". Error message: {}", new Object[]{path, ex.getMessage()});
+            return new byte[0];
         }
     }
 }

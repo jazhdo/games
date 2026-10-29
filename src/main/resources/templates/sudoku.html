@@ -1,7 +1,81 @@
 <style>
+#board {
+    display: flex;
+    flex-direction: column;
 
+    width: 1000px;
+    height: 1000px;
+
+    border-radius: 60px;
+    padding: 20px;
+}
+#board hr {
+    display: flex;
+
+    width: 548px;
+    height: 4px;
+
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    
+    background-color: black;
+}
+#board div {
+    display: flex;
+    flex-direction: row;
+
+    width: 548px;
+    height: 60px;
+}
+#board div.n0 span.n0, #board div.n0 span.n2, #board div.n1 span.n1, #board div.n2 span.n0, #board div.n2 span.n2 {
+    background-color: hsl(0, 0%, 67%);
+}
+#board div hr {
+    inherits: false;
+
+    display: flex;
+
+    width: 4px;
+    height: 60px;
+
+    padding: 0px;
+    margin: 0px;
+    border: none;
+    
+    background-color: black;
+}
+#board div span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 59px;
+    height: 59px;
+
+    border: 1px solid hsl(0, 0%, 80%);
+
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+
+    user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
 </style>
 <h1>Sudoku</h1>
 <div>
-
+    <div id="board">
+        <th:block th:each="row : ${rows}">
+            <div th:class="|n${rowStat.index / 3}|">
+                <th:block th:each="number : ${row}">
+                    <span th:class="|n${numberStat.index / 3}|" th:text="${number}"></span>
+                    <hr th:if="${numberStat.index == 2 or numberStat.index == 5}"></hr>
+                </th:block>
+            </div>
+            <hr th:if="${rowStat.index == 2 or rowStat.index == 5}"></hr>
+        </th:block>
+    </div>
 </div>
