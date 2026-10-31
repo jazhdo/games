@@ -9,6 +9,8 @@ main {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 34px;
     font-weight: 500;
+    margin: 0px;
+    margin-bottom: 10px;
 }
 #board {
     display: flex;
@@ -58,10 +60,22 @@ main {
     -moz-user-select: none;
     -webkit-user-select: none;
 }
+#board div span.win {
+    background-color: hsl(0, 100%, 70%);
+}
+#reset {
+    font-size: 24px;
+    border-radius: 100px;
+    padding: 5px 10px;
+    font-weight: 400;
+    background: hsl(0, 0%, 90%);
+    margin-bottom: 20px;
+}
 </style>
 <h1>Tic Tac Toe</h1>
 <main>
     <h1 id="turn">Turn: X</h1>
+    <button id="reset" style="display: none;" onclick="reset(this);">Press to Reset</button>
     <div id="board">
         <div>
             <span></span>
@@ -88,7 +102,9 @@ main {
         </div>
     </div>
 </main>
-<script>
+<script th:inline="none">
+const DEBUG_MODE = false;
+
 const board = document.getElementById("board"), values = [
     [
         null,
@@ -106,17 +122,82 @@ const board = document.getElementById("board"), values = [
         null
     ]
 ];
-let mode = true;
-const spotElementArray = board.querySelectorAll("div span"), turnElement = document.getElementById("turn");
+let mode = true, win = false, clicks = 0;
+const spotElementArray = board.querySelectorAll("div span"), turnElement = document.getElementById("turn"), resetButton = document.getElementById("reset");
 for (i = 0; i < spotElementArray.length; i++) {
     const element = spotElementArray[i], row = Math.floor(i / 3), column = Math.floor(i % 3);
     element.onclick = (event) => {
-        if (values[row][column] === null) {
+        if (values[row][column] === null && win === false) {
             values[row][column] = mode;
             element.textContent = mode ? "X" : "O";
             mode = !mode;
             turnElement.textContent = "Turn: " + (mode ? "X" : "O");
+            checkEndGame();
+            clicks++;
+            debugLog("Clicks: " + clicks);
+            if (clicks === 9) {
+                turnElement.textContent = "Nobody won!";
+                resetButton.style.display = "flex";
+            }
         }
     }
+}
+
+function checkEndGame() {
+    const toCheck = [
+        [[0, 0], [0, 1], [0, 2]],
+        [[1, 0], [1, 1], [1, 2]],
+        [[2, 0], [2, 1], [2, 2]],
+        [[0, 0], [1, 0], [2, 0]],
+        [[0, 1], [1, 1], [2, 1]],
+        [[0, 2], [1, 2], [2, 2]],
+        [[0, 0], [1, 1], [2, 2]],
+        [[2, 0], [1, 1], [0, 2]]
+    ];
+    for (array of toCheck) {
+        if (allSame(array)) {
+            debugLog("Array is all same: " + array);
+            endGame(array);
+            return;
+        }
+    }
+}
+function endGame(array) {
+    win = true;
+    resetButton.style.display = "flex";
+    for (arrayElement of array) {
+        board.querySelectorAll("div")[arrayElement[0]].querySelectorAll("span")[arrayElement[1]].classList.add("win");
+    }
+    turnElement.textContent = (mode ? "O" : "X") + " won!";
+}
+
+function allSame(array) {
+    return array.every(value => {
+        debugLog("Checking value: " + values[value[0]][value[1]] + " (" + value + ")");
+        return values[value[0]][value[1]] === values[array[0][0]][array[0][1]] && values[value[0]][value[1]] !== null;
+    });
+}
+
+function reset(buttonElement) {
+    clicks = 0;
+    win = false;
+    buttonElement.style.display = "none";
+    for (i = 0; i < 3; i++) {
+        values[i] = [
+            null,
+            null,
+            null
+        ];
+    }
+    document.querySelectorAll("#board div span").forEach(element => {
+        element.removeAttribute("class");
+        element.textContent = "";
+    });
+    turnElement.textContent = "Turn: X";
+    mode = true;
+}
+
+function debugLog(log) {
+    if (DEBUG_MODE) console.log(log);
 }
 </script>
