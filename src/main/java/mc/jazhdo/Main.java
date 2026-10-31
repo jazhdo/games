@@ -38,17 +38,17 @@ public class Main {
                 // Log request
                 log.info("Request: {} -> {}{}", ctx.method(), ctx.host(), ctx.path());
 
-                // Check hostname
-                String ip = ctx.ip();
-                if (!"[0:0:0:0:0:0:0:1]".equals(ip) && !"127.0.0.1".equals(ip) && !"100.74.100.100".equals(ip)) {
-                    ctx.skipRemainingHandlers();
-                    log.info("Request IP {} Forbidden.", ip);
-                }
+                // // Check hostname
+                // String ip = ctx.ip();
+                // if (!"[0:0:0:0:0:0:0:1]".equals(ip) && !"127.0.0.1".equals(ip) && !"100.74.100.100".equals(ip)) {
+                //     ctx.skipRemainingHandlers();
+                //     log.info("Request IP {} Forbidden.", ip);
+                // }
             });
             routes.get("/", ctx -> {
                 // Menu page
                 Context context = new Context();
-                context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("data:png;base64,[data_here]", "Sudoku", "/sudoku"))));
+                context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("data:png;base64,[data_here]", "Sudoku", "/sudoku"), new Game("data:png;base64,[data_here]", "Tic Tac Toe", "/tictactoe"))));
                 ctx.render("templates/outer.html", Map.of("name", "Home", "content", engine.process(new String(getFile("templates/index.html"), StandardCharsets.UTF_8), context)));
             });
             routes.get("/{page}", ctx -> {
@@ -59,7 +59,7 @@ public class Main {
                         outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/minesweeper.html"), StandardCharsets.UTF_8), new Context())));
                         ctx.render("templates/outer.html", Map.of("name", "Minesweeper", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
-                    case "minesweeper.js", "sudoku.js" -> {
+                    case "minesweeper.js", "sudoku.js", "tictactoe.js" -> {
                         ctx.contentType("text/javascript");
                         ctx.result(new String(getFile("templates/" + page), StandardCharsets.UTF_8));
                     }
@@ -74,6 +74,11 @@ public class Main {
                         Context outerContext = new Context();
                         outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/sudoku.html"), StandardCharsets.UTF_8), innerContext)));
                         ctx.render("templates/outer.html", Map.of("name", "Sudoku", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
+                    }
+                    case "tictactoe" -> {
+                        Context outerContext = new Context();
+                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/tictactoe.html"), StandardCharsets.UTF_8), new Context())));
+                        ctx.render("templates/outer.html", Map.of("name", "Tic Tac Toe", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
                     case "win", "normal", "lose", "boom", "bomb", "flag", "wrong" -> {
                         ctx.contentType("image/png");
