@@ -59,9 +59,9 @@ public class Main {
                         outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/minesweeper.html"), StandardCharsets.UTF_8), new Context())));
                         ctx.render("templates/outer.html", Map.of("name", "Minesweeper", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
                     }
-                    case "minesweeper.js" -> {
+                    case "minesweeper.js", "sudoku.js" -> {
                         ctx.contentType("text/javascript");
-                        ctx.result(new String(getFile("templates/minesweeper.js"), StandardCharsets.UTF_8));
+                        ctx.result(new String(getFile("templates/" + page), StandardCharsets.UTF_8));
                     }
                     case "sudoku" -> {
                         int[][] board;

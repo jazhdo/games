@@ -1,13 +1,25 @@
 <style>
+#screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    width: 100%;
+    height: 100%;
+}
 #board {
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
-    width: 1000px;
-    height: 1000px;
+    width: 548px;
+    height: 548px;
 
-    border-radius: 60px;
+    border-radius: 30px;
     padding: 20px;
+
+    background-color: hsl(0, 0%, 70%);
 }
 #board hr {
     display: flex;
@@ -28,12 +40,19 @@
     width: 548px;
     height: 60px;
 }
-#board div.n0 span.n0, #board div.n0 span.n2, #board div.n1 span.n1, #board div.n2 span.n0, #board div.n2 span.n2 {
-    background-color: hsl(0, 0%, 67%);
+#board div span {
+    background-color: hsl(0, 0%, 95%);
+}
+#board .n0 .n0, #board .n0 .n2, #board .n1 .n1, #board .n2 .n0, #board .n2 .n2 {
+    background-color: hsl(0, 0%, 80%);
+}
+#board div span[selected] {
+    background-color: hsl(0, 0%, 70%) !important;
+}
+#board div span[current] {
+    background-color: hsl(0, 0%, 60%) !important;
 }
 #board div hr {
-    inherits: false;
-
     display: flex;
 
     width: 4px;
@@ -53,7 +72,7 @@
     width: 59px;
     height: 59px;
 
-    border: 1px solid hsl(0, 0%, 80%);
+    border: 1px solid hsl(0, 0%, 90%);
 
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     font-size: 36px;
@@ -64,14 +83,39 @@
     -moz-user-select: none;
     -webkit-user-select: none;
 }
+#board div span #input {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 36px;
+    font-weight: 500;
+    color: red;
+    
+    background-color: white;
+ 
+    border: none;
+    border: 2px solid hsl(0, 0%, 20%);
+    border-radius: 100px;
+
+    padding: 2px;
+
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    text-align: center;
+
+    caret-color: transparent;
+}
+#board div span #input:focus {
+    outline: none;
+}
 </style>
 <h1>Sudoku</h1>
-<div>
+<div id="screen">
     <div id="board">
         <th:block th:each="row : ${rows}">
             <div th:class="|n${rowStat.index / 3}|">
                 <th:block th:each="number : ${row}">
-                    <span th:class="|n${numberStat.index / 3}|" th:text="${number}"></span>
+                    <span th:class="|n${numberStat.index / 3}|" th:text="${number == 0 ? '' : number}" th:data-num="${number}" th:data-put="${number}" th:data-x="${numberStat.index}" th:data-y="${rowStat.index}" onclick="newCurrent(this);"></span>
                     <hr th:if="${numberStat.index == 2 or numberStat.index == 5}"></hr>
                 </th:block>
             </div>
@@ -79,3 +123,4 @@
         </th:block>
     </div>
 </div>
+<script src="/sudoku.js"></script>
