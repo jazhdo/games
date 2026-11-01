@@ -53,12 +53,16 @@ main {
     height: 100px;
     width: 100px;
     
-    background-color: hsl(0, 0%, 70%);
+    background-color: hsl(0, 0%, 80%);
 
     user-select: none;
     -ms-user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
+}
+#board div span:hover {
+    background-color: hsl(0, 0%, 77%);
+    cursor: pointer;
 }
 #board div span.win {
     background-color: hsl(0, 100%, 70%);
@@ -68,8 +72,12 @@ main {
     border-radius: 100px;
     padding: 5px 10px;
     font-weight: 400;
-    background: hsl(0, 0%, 90%);
+    background-color: hsl(0, 0%, 90%);
     margin-bottom: 20px;
+}
+#reset:hover {
+    background-color: hsl(0, 0%, 87%);
+    cursor: pointer;
 }
 </style>
 <h1>Tic Tac Toe</h1>
@@ -78,11 +86,11 @@ main {
     <button id="reset" style="display: none;" onclick="reset(this);">Press to Reset</button>
     <div id="board">
         <div>
-            <span></span>
+            <span style="border-top-left-radius: 20px;"></span>
             <hr>
             <span></span>
             <hr>
-            <span></span>
+            <span style="border-top-right-radius: 20px;"></span>
         </div>
         <hr>
         <div>
@@ -94,11 +102,11 @@ main {
         </div>
         <hr>
         <div>
-            <span></span>
+            <span style="border-bottom-left-radius: 20px;"></span>
             <hr>
             <span></span>
             <hr>
-            <span></span>
+            <span style="border-bottom-right-radius: 20px;"></span>
         </div>
     </div>
 </main>
@@ -132,13 +140,13 @@ for (i = 0; i < spotElementArray.length; i++) {
             element.textContent = mode ? "X" : "O";
             mode = !mode;
             turnElement.textContent = "Turn: " + (mode ? "X" : "O");
-            checkEndGame();
             clicks++;
             debugLog("Clicks: " + clicks);
             if (clicks === 9) {
                 turnElement.textContent = "Nobody won!";
                 resetButton.style.display = "flex";
             }
+            checkEndGame();
         }
     }
 }

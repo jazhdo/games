@@ -20,15 +20,16 @@ import io.javalin.rendering.template.JavalinThymeleaf;
 
 public class Main {
     private final Logger log = LoggerFactory.getLogger(Main.class);
+    private TemplateEngine engine;
     private Javalin jl;
 
     public void main(String[] args) {
         // Create template engine for use on subpages
-        TemplateEngine engine = new TemplateEngine();
+        engine = new TemplateEngine();
         engine.setTemplateResolver(new StringTemplateResolver());
 
         // Start the web server
-        Javalin jl = Javalin.create(config -> {
+        jl = Javalin.create(config -> {
             // Thymeleaf
             config.fileRenderer(new JavalinThymeleaf());
 
@@ -48,18 +49,14 @@ public class Main {
             routes.get("/", ctx -> {
                 // Menu page
                 Context context = new Context();
-                context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("data:png;base64,[data_here]", "Sudoku", "/sudoku"), new Game("data:png;base64,[data_here]", "Tic Tac Toe", "/tictactoe"))));
+                context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("/sudoku.png", "Sudoku", "/sudoku"), new Game("/tictactoe.png", "Tic Tac Toe", "/tictactoe"))));
                 ctx.render("templates/outer.html", Map.of("name", "Home", "content", engine.process(new String(getFile("templates/index.html"), StandardCharsets.UTF_8), context)));
             });
             routes.get("/{page}", ctx -> {
                 String page = ctx.pathParam("page");
                 switch (page) {
-                    case "minesweeper" -> {
-                        Context outerContext = new Context();
-                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/minesweeper.html"), StandardCharsets.UTF_8), new Context())));
-                        ctx.render("templates/outer.html", Map.of("name", "Minesweeper", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
-                    }
-                    case "minesweeper.js", "sudoku.js", "tictactoe.js" -> {
+                    case "minesweeper" -> renderPage("Minesweeper", "templates/minesweeper.html", ctx, new Context());
+                    case "minesweeper.js", "sudoku.js" -> {
                         ctx.contentType("text/javascript");
                         ctx.result(new String(getFile("templates/" + page), StandardCharsets.UTF_8));
                     }
@@ -70,17 +67,10 @@ public class Main {
                         } while (board == null);
                         Context innerContext = new Context();
                         innerContext.setVariable("rows", board);
-
-                        Context outerContext = new Context();
-                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/sudoku.html"), StandardCharsets.UTF_8), innerContext)));
-                        ctx.render("templates/outer.html", Map.of("name", "Sudoku", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
+                        renderPage("Sudoku", "templates/sudoku.html", ctx, innerContext);
                     }
-                    case "tictactoe" -> {
-                        Context outerContext = new Context();
-                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/tictactoe.html"), StandardCharsets.UTF_8), new Context())));
-                        ctx.render("templates/outer.html", Map.of("name", "Tic Tac Toe", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
-                    }
-                    case "win", "normal", "lose", "boom", "bomb", "flag", "wrong" -> {
+                    case "tictactoe" -> renderPage("Tic Tac Toe", "templates/tictactoe.html", ctx, new Context());
+                    case "win", "normal", "lose", "boom", "bomb", "flag", "wrong", "sudoku.png", "tictactoe.png" -> {
                         ctx.contentType("image/png");
                         ctx.result(getFile("icons/" + page + ".png"));
                     }
@@ -88,15 +78,20 @@ public class Main {
                         ctx.contentType("image/x-icon");
                         ctx.result(getFile("icons/favicon.ico"));
                     }
-                    default -> {
-                        Context outerContext = new Context();
-                        outerContext.setVariables(Map.of("content", engine.process(new String(getFile("templates/error.html"), StandardCharsets.UTF_8), new Context())));
-                        ctx.render("templates/outer.html", Map.of("name", "Error 404", "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
-                    }
+                    default -> renderPage("Error 404", "templates/error.html", ctx, new Context());
                 }
             });
         });
-        jl.start("0.0.0.0", 3000);
+        try {
+            jl.start("0.0.0.0", Integer.parseInt(System.getenv("PORT")));
+        } catch (NumberFormatException ex) {
+            jl.start("0.0.0.0", 443);
+        }
+    }
+    private void renderPage(String title, String path, io.javalin.http.Context routeContext, Context pageContext) {
+        Context outerContext = new Context();
+        outerContext.setVariable("content", engine.process(new String(getFile(path), StandardCharsets.UTF_8), pageContext));
+        routeContext.render("templates/outer.html", Map.of("name", title, "content", engine.process(new String(getFile("templates/main.html"), StandardCharsets.UTF_8), outerContext)));
     }
     // Unneeded debug functions
     // private String printMap(Map<String, String> map) {

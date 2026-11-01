@@ -10,7 +10,11 @@ The usual minesweeper game, with a timer and customizable sizes and mines.
 
 ### Sudoku
 
-A common logic game. (Not shipped this week, its in development.)
+A common logic game.
+
+### Tic Tac Toe
+
+A ancient simple game of Xs and Os
 
 ## Weeks used
 
@@ -27,5 +31,14 @@ Minimum screen size: 1320 x 1020
 
 ## Terra Week 2 Theme: Antique
 
-- 4-bit colors: each hex part can only be 0x00, 0x55, 0xAA, or 0xFF (excluding shading)
-- Sudoku itself is pretty old, having came out in 1984
+Tic Tac Toe is 3300 years old.
+Sudoku is also pretty old, but it's from 1984.
+
+## Terra Week 2: Logos
+
+- Timelapse: https://lapse.hackclub.com/timelapse/BDUs9QuOrYOP
+
+## Links
+
+1. [Main](https://games.itsjaz.com/)
+2. [Always Working Backup](https://games-z8cp.onrender.com/)
