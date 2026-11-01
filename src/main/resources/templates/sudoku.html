@@ -182,7 +182,7 @@
         <th:block th:each="row : ${rows}">
             <div th:class="|n${rowStat.index / 3}|">
                 <th:block th:each="number : ${row}">
-                    <span th:class="|n${numberStat.index / 3}|" th:text="${number == 0 ? '' : number}" th:data-num="${number}" th:data-put="${number}" th:data-x="${numberStat.index}" th:data-y="${rowStat.index}" onclick="newCurrent(this);"></span>
+                    <span th:class="|n${numberStat.index / 3}|" th:text="${number == 0 ? '' : number}" th:data-num="${number}" th:data-put="${number}" th:data-x="${numberStat.index}" th:data-y="${rowStat.index}"></span>
                     <hr th:if="${numberStat.index == 2 or numberStat.index == 5}"></hr>
                 </th:block>
             </div>
@@ -190,4 +190,4 @@
         </th:block>
     </div>
 </div>
-<script src="/sudoku.js"></script>
+<script src="/sudoku.ts"></script>

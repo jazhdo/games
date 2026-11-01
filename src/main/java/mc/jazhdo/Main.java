@@ -2,6 +2,7 @@ package mc.jazhdo;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.List;
@@ -13,6 +14,10 @@ import org.slf4j.LoggerFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
+
+import com.caoccao.javet.swc4j.Swc4j;
+import com.caoccao.javet.swc4j.enums.Swc4jMediaType;
+import com.caoccao.javet.swc4j.options.Swc4jTranspileOptions;
 
 import io.javalin.Javalin;
 import io.javalin.config.RoutesConfig;
@@ -59,6 +64,10 @@ public class Main {
                     case "minesweeper.js", "sudoku.js" -> {
                         ctx.contentType("text/javascript");
                         ctx.result(new String(getFile("templates/" + page), StandardCharsets.UTF_8));
+                    }
+                    case "sudoku.ts", "tictactoe.ts", "minesweeper.ts" -> {
+                        ctx.contentType("text/javascript");
+                        ctx.result(new Swc4j().transpile(new String(getFile("templates/" + page), StandardCharsets.UTF_8), new Swc4jTranspileOptions().setSpecifier(URI.create("file:///" + page).toURL()).setMediaType(Swc4jMediaType.TypeScript)).getCode());
                     }
                     case "sudoku" -> {
                         int[][] board;
