@@ -33,6 +33,7 @@ Minimum screen size: 1320 x 1020
 
 Tic Tac Toe is 3300 years old.
 Sudoku is also pretty old, but it's from 1984.
+Snake is from the Nokia so its pretty old. (I've never seen a real nokia irl)
 
 ## Terra Week 2: Logos
 

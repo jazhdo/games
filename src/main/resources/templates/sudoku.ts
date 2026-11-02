@@ -71,7 +71,7 @@ function checksolved() {
     const groups: number[][][] = [[[], [], []], [[], [], []], [[], [], []]], rows: number[][] = [[], [], [], [], [], [], [], [], []], /** @type {[[number]]} */ columns: number[][] = [[], [], [], [], [], [], [], [], []];
     board.querySelectorAll("div span").forEach(element => {
         const x = parseInt(element.getAttribute("data-x") as string), y = parseInt(element.getAttribute("data-y") as string), group = getGroup(x, y), int = parseInt(element.getAttribute("data-put") as string);
-        console.log(x, y, group, int);
+        // console.log(x, y, group, int);
         groups[group.y][group.x].push(int);
         rows[y].push(int);
         columns[x].push(int);

@@ -1,0 +1,50 @@
+<style>
+main {
+    display: flex;
+    flex-direction: row;
+}
+#board {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: fit-content;
+    height: fit-content;
+
+    border: 5px solid hsl(0, 0%, 20%);
+}
+#board div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#board div span {
+    display: flex;
+
+    width: 18px;
+    height: 18px;
+    
+    border: 1px solid hsl(0, 0%, 50%);
+
+    background-color: hsl(104, 71%, 74%);
+}
+#board div span.snake {
+    background-color: hsl(104, 89%, 38%);
+}
+#board div span.head {
+    background-color: hsl(104, 70%, 24%);
+}
+#board div span.apple {
+    background-image: url("/apple");
+    /* Credit: https://uxwing.com/fresh-apple-icon/ */
+}
+</style>
+<h1>Snake</h1>
+<main>
+    <div id="board">
+        <button onclick="main();">Play</button>
+        <p>Use Arrow Keys or W-A-S-D to move.</p>
+    </div>
+</main>
+<script src="/snake.ts"></script>

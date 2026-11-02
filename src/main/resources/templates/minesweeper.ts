@@ -217,6 +217,16 @@ function start(gamemode: gamemode) {
     loadBoard();
 }
 
+const customStartInputs = document.querySelectorAll<HTMLInputElement>("#gamemode-select button p input");
+customStartInputs.forEach(element => {
+    element.onchange = () => element.value = element.value.replace(/\D/g, "")
+    element.onclick = (event) => event.stopPropagation();
+});
+
+function customStart(button: HTMLButtonElement) {
+    start({x: parseInt(customStartInputs[0].value), y: parseInt(customStartInputs[1].value), mines: parseInt(customStartInputs[2].value)});
+}
+
 /**
  * Checks if the game is to be ended
  */

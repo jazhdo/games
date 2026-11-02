@@ -38,6 +38,7 @@
     gap: 2px;
     height: 100%;
     width: 100%;
+    overflow: scroll;
 }
 
 /* Gamemode selection menu */
@@ -60,6 +61,17 @@
 #board div#gamemode-select button:hover {
     background-color: hsl(0, 0%, 78%);
     cursor: pointer;
+}
+#board div#gamemode-select button p {
+    margin: 0px;
+}
+#board div#gamemode-select button input {
+    width: 33px;
+    height: 27px;
+    padding: 2px;
+    border-radius: 10px;
+    border: 1px solid black;
+    font-size: 20px;
 }
 
 /* Playing pieces */
@@ -188,6 +200,11 @@
             <button onclick="start({x: 8, y: 8, mines: 10});">Beginner (8x8, 10 Mines)</button>
             <button onclick="start({x: 16, y: 16, mines: 40});">Intermediate (16x16, 40 Mines)</button>
             <button onclick="start({x: 30, y: 16, mines: 99});">Expert (30x16, 99 Mines)</button>
+            <button onclick="start({x: 50, y: 40, mines: 400})">Big Screen Master (50x40, 500 Mines)</button>
+            <button onclick="start({x: 30, y: 16, mines: 240})">Impossible (30x16, 240 Mines)</button>
+            <button onclick="customStart(this)">
+                <p>Custom (<input maxlength="3">x<input maxlength="3">, <input maxlength="3"> Mines)</p>
+            </button>
             <button onclick="helpPopup();">Help</button>
         </div>
     </div>

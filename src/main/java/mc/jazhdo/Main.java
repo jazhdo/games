@@ -65,7 +65,7 @@ public class Main {
                         ctx.contentType("text/javascript");
                         ctx.result(new String(getFile("templates/" + page), StandardCharsets.UTF_8));
                     }
-                    case "sudoku.ts", "tictactoe.ts", "minesweeper.ts" -> {
+                    case "sudoku.ts", "tictactoe.ts", "minesweeper.ts", "snake.ts" -> {
                         ctx.contentType("text/javascript");
                         ctx.result(new Swc4j().transpile(new String(getFile("templates/" + page), StandardCharsets.UTF_8), new Swc4jTranspileOptions().setSpecifier(URI.create("file:///" + page).toURL()).setMediaType(Swc4jMediaType.TypeScript)).getCode());
                     }
@@ -79,9 +79,14 @@ public class Main {
                         renderPage("Sudoku", "templates/sudoku.html", ctx, innerContext);
                     }
                     case "tictactoe" -> renderPage("Tic Tac Toe", "templates/tictactoe.html", ctx, new Context());
+                    case "snake" -> renderPage("Snake", "templates/snake.html", ctx, new Context());
                     case "win", "normal", "lose", "boom", "bomb", "flag", "wrong", "sudoku.png", "tictactoe.png" -> {
                         ctx.contentType("image/png");
                         ctx.result(getFile("icons/" + page + ".png"));
+                    }
+                    case "apple" -> {
+                        ctx.contentType("image/svg");
+                        ctx.result(getFile("icons/" + page + ".svg"));
                     }
                     case "favicon.ico" -> {
                         ctx.contentType("image/x-icon");
