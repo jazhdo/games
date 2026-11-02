@@ -58,3 +58,7 @@ More info will probably be on the ship notes because I couldn't think of them wh
 
 1. [Main](https://games.itsjaz.com/)
 2. [Always Working Backup](https://games-z8cp.onrender.com/)
+
+## After ship note
+
+I didn't include a img of the game running nor a how to play section because its way to easy to obtain those, for the img just OPEN UP THE SITE (or look at a devlog's img cuz I do include it there) and for the how-to-play, if you don't know, search it up on google because the games are too commonly found and its very unlikely that anyone would actually not know how to play
