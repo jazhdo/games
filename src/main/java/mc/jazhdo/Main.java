@@ -54,7 +54,7 @@ public class Main {
             routes.get("/", ctx -> {
                 // Menu page
                 Context context = new Context();
-                context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("/sudoku.png", "Sudoku", "/sudoku"), new Game("/tictactoe.png", "Tic Tac Toe", "/tictactoe"))));
+                context.setVariables(Map.of("games", List.of(new Game("/flag", "Minesweeper", "/minesweeper"), new Game("/sudoku.png", "Sudoku", "/sudoku"), new Game("/tictactoe.png", "Tic Tac Toe", "/tictactoe"), new Game("", "Snake", "/snake"))));
                 ctx.render("templates/outer.html", Map.of("name", "Home", "content", engine.process(new String(getFile("templates/index.html"), StandardCharsets.UTF_8), context)));
             });
             routes.get("/{page}", ctx -> {

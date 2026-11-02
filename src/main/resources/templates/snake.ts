@@ -51,7 +51,6 @@ function main() {
     document.addEventListener("keydown", (event) => {
         if (!Object.keys(modes).includes(event.key)) return;
         nextDirection = modes[event.key];
-        console.log(nextDirection);
     });
 
     gameLoop = setInterval(() => {
@@ -73,15 +72,14 @@ function main() {
                 return;
         }
 
+        // Check head out-of-bounds status (Endgame logic not yet added, just prevent player from exiting the map)
+        if (newHead[0] > 9 || newHead[0] < 0 || newHead[1] > 20 || newHead[1] < 0) return;
+
         // Update snake array
         for (let i = snake.length - 1; i > 0; i--) {
-            console.log("array: " + i);
             snake[i] = snake[i - 1];
         }
         snake[0] = newHead;
-
-        console.log(newHead);
-        console.log(snake);
 
         // Render
         boardElementArray[newHead[0]][newHead[1]].classList.add("head");
